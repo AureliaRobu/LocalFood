@@ -1,7 +1,11 @@
 import Login from '../features/login/Login';
 
 function LoginPage() {
-  return <Login />;
+  return (
+    <div>
+      <Login />
+    </div>
+  );
 }
 
 export default LoginPage;
