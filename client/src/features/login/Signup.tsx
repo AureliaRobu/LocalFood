@@ -6,6 +6,7 @@ import { RxAvatar } from 'react-icons/rx';
 import { useForm } from 'react-hook-form';
 import styles from '../../styles/styles';
 import useCreateUser from '../users/useCreateUser';
+import FormRow from '../../ui/FormRow';
 
 function Signup() {
   const [visible, setVisible] = useState(false);
@@ -37,94 +38,75 @@ function Signup() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-stone-700"
-              >
-                Full name
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    id="name"
-                    autoComplete="name"
-                    className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
-                    disabled={isCreating}
-                    {...register('name', {
-                      required: 'This field is required',
-                    })}
+            <FormRow label="Full name" error={errors?.name?.message}>
+              <div className="mt-1">
+                <input
+                  type="text"
+                  id="name"
+                  autoComplete="name"
+                  className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                  disabled={isCreating}
+                  {...register('name', {
+                    required: 'This field is required',
+                  })}
+                />
+              </div>
+            </FormRow>
+            <FormRow label="Email address" error={errors?.email?.message}>
+              <div className="mt-1">
+                <input
+                  type="email"
+                  id="email"
+                  autoComplete="email"
+                  className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                  disabled={isCreating}
+                  {...register('email', {
+                    required: 'This field is required',
+                    pattern: {
+                      value: /\S+@\S+\.\S+/,
+                      message: 'Please provide a valid email address',
+                    },
+                  })}
+                />
+              </div>
+            </FormRow>
+            <FormRow
+              label="Password (min 8 characters)"
+              error={errors?.password?.message}
+            >
+              <div className="relative mt-1">
+                <input
+                  type={visible ? 'text' : 'password'}
+                  id="password"
+                  autoComplete="current-password"
+                  className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                  disabled={isCreating}
+                  {...register('password', {
+                    required: 'This field is required',
+                    minLength: {
+                      value: 8,
+                      message: 'Password needs a minimum of 8 characters',
+                    },
+                  })}
+                />
+                {!visible ? (
+                  <FontAwesomeIcon
+                    icon={faEye}
+                    className="absolute right-2 top-2 cursor-pointer"
+                    onClick={() => setVisible(true)}
+                    size="lg"
                   />
-                </div>
-              </label>
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-stone-700"
-              >
-                Email address
-                <div className="mt-1">
-                  <input
-                    type="email"
-                    id="email"
-                    autoComplete="email"
-                    className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
-                    disabled={isCreating}
-                    {...register('email', {
-                      required: 'This field is required',
-                      pattern: {
-                        value: /\S+@\S+\.\S+/,
-                        message: 'Please provide a valid email address',
-                      },
-                    })}
+                ) : (
+                  <FontAwesomeIcon
+                    icon={faEyeSlash}
+                    className="absolute right-2 top-2 cursor-pointer"
+                    onClick={() => setVisible(false)}
+                    size="lg"
                   />
-                </div>
-              </label>
-            </div>
+                )}
+              </div>
+            </FormRow>
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-stone-700"
-              >
-                Password
-                <div className="relative mt-1">
-                  <input
-                    type={visible ? 'text' : 'password'}
-                    id="password"
-                    autoComplete="current-password"
-                    className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
-                    disabled={isCreating}
-                    {...register('password', {
-                      required: 'This field is required',
-                      minLength: {
-                        value: 8,
-                        message: 'Password needs a minimum of 8 characters',
-                      },
-                    })}
-                  />
-                  {!visible ? (
-                    <FontAwesomeIcon
-                      icon={faEye}
-                      className="absolute right-2 top-2 cursor-pointer"
-                      onClick={() => setVisible(true)}
-                      size="lg"
-                    />
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faEyeSlash}
-                      className="absolute right-2 top-2 cursor-pointer"
-                      onClick={() => setVisible(false)}
-                      size="lg"
-                    />
-                  )}
-                </div>
-              </label>
-            </div>
-            <div>
-              <label
-                htmlFor="avatar"
-                className="block text-sm font-medium text-stone-700"
-              />
               <div className="mt-2 flex items-center">
                 <span className="inline-block h-8 w-8 overflow-hidden rounded-full">
                   {avatar ? (
