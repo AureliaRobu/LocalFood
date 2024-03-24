@@ -23,7 +23,7 @@ function Signup() {
     user.append('file', data.file[0]);
     user.append('name', data.name);
     user.append('email', data.email);
-    user.append('file', data.password);
+    user.append('password', data.password);
     createUser(user, {
       onSettled: () => reset(),
     });
