@@ -3,21 +3,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { RxAvatar } from 'react-icons/rx';
+import { useForm } from 'react-hook-form';
 import styles from '../../styles/styles';
+import useCreateUser from '../users/useCreateUser';
 
 function Signup() {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
   const [visible, setVisible] = useState(false);
-  const [avatar, setAvatar] = useState(null);
-
-  function handleSubmit() {
-    console.log('SUBMIT');
+  const { register, handleSubmit, reset, watch, formState } = useForm();
+  const { errors } = formState;
+  const { isCreating, createUser } = useCreateUser();
+  let avatar;
+  if (watch('file')) {
+    [avatar] = watch('file');
   }
-  function handleFileInputChange(e) {
-    const file = e.target.files[0];
-    setAvatar(file);
+
+  function onSubmit(data) {
+    const user = new FormData();
+    user.append('file', data.file[0]);
+    user.append('name', data.name);
+    user.append('email', data.email);
+    user.append('file', data.password);
+    createUser(user, {
+      onSettled: () => reset(),
+    });
   }
   return (
     <div className="flex min-h-screen flex-col justify-center bg-lime-50 py-12 sm:px-6 lg:px-8">
@@ -28,7 +36,7 @@ function Signup() {
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label
                 htmlFor="name"
@@ -38,12 +46,13 @@ function Signup() {
                 <div className="mt-1">
                   <input
                     type="text"
-                    name="name"
+                    id="name"
                     autoComplete="name"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
                     className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                    disabled={isCreating}
+                    {...register('name', {
+                      required: 'This field is required',
+                    })}
                   />
                 </div>
               </label>
@@ -57,12 +66,17 @@ function Signup() {
                 <div className="mt-1">
                   <input
                     type="email"
-                    name="email"
+                    id="email"
                     autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                    disabled={isCreating}
+                    {...register('email', {
+                      required: 'This field is required',
+                      pattern: {
+                        value: /\S+@\S+\.\S+/,
+                        message: 'Please provide a valid email address',
+                      },
+                    })}
                   />
                 </div>
               </label>
@@ -76,12 +90,17 @@ function Signup() {
                 <div className="relative mt-1">
                   <input
                     type={visible ? 'text' : 'password'}
-                    name="password"
+                    id="password"
                     autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     className="block w-full appearance-none rounded-md border border-stone-300 px-3 py-2 placeholder-stone-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                    disabled={isCreating}
+                    {...register('password', {
+                      required: 'This field is required',
+                      minLength: {
+                        value: 8,
+                        message: 'Password needs a minimum of 8 characters',
+                      },
+                    })}
                   />
                   {!visible ? (
                     <FontAwesomeIcon
@@ -126,11 +145,12 @@ function Signup() {
                   <span>Upload a file</span>
                   <input
                     type="file"
-                    name="avatar"
                     id="file-input"
                     accept=".jpg,.jpeg,.png"
-                    onChange={handleFileInputChange}
                     className="sr-only"
+                    {...register('file', {
+                      required: 'This field is required',
+                    })}
                   />
                 </label>
               </div>
